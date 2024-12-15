@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Anchorz-Up technical task
 
-## Getting Started
+## Overview
+This is sleek URL shortening service built with Next.js 15, utilizing modern tools like Prisma and PostgreSQL for data management, TailwindCSS and ShadCN components for styling, and Typescript for type safety. This app supports core URL management features including creation, deletion, redirection, and analytics, providing a streamlined online experience through shortened links.
 
-First, run the development server:
+## Features
+- **Short Link Generation**: Converts long URLs into a link with 6 randomized characters
+- **Redirection**: Redirects users to the original URL via short links.
+- **Statistics**: Tracks and displays click counts for each short link.
+- **Expiration**: Supports expiration dates for short links.
+- **QR Code Generation** (optional): Generates QR codes for easy sharing.
+- **API Routes**: 
+  - `api/create`: Creates a short link.
+  - `api/delete`: Deletes a short link.
+  - `api/redirect`: Redirects to the original URL.
+  - `api/all`: Gets all the URLs from the db
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Prerequisites
+- **Node.js**: Version 16 or later.
+- **Environment Variables**: Ensure you have the necessary `.env` file with the following:
+
+```env
+DATABASE_URL="postgresql://short-url_owner:QqRB08cVArfm@ep-cool-snow-a2uf1mky.eu-central-1.aws.neon.tech/short-url?sslmode=require"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Ledionrestelica/anchorz-up.git
+   cd anchorz-up
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. **Setup the Environment Variables**
+   Create a `.env` file in the project root and add the `DATABASE_URL` variable:
+   ```env
+   DATABASE_URL="postgresql://short-url_owner:QqRB08cVArfm@ep-cool-snow-a2uf1mky.eu-central-1.aws.neon.tech/short-url?sslmode=require"
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Start the Development Server**
+   Run the Next.js development server:
+   ```bash
+   npm run dev
+   ```
+   The app will be accessible at `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
+```
+anchorz-up/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── create/
+│   │   │   ├── delete/
+│   │   │   └── redirect/
+│   │   └── ...
+│   ├── components/
+│   └── utils/
+├── prisma/
+│   ├── schema.prisma
+├── .env
+├── package.json
+└── README.md
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Technologies
+- **Next.js 15**: Framework for building React applications with an App Router architecture.
+- **TailwindCSS**: Utility-first CSS framework for styling.
+- **ShadCN**: Component library for modern UIs.
+- **Prisma**: ORM for database operations.
+- **PostgreSQL**: Relational database for storing URL data.
+- **TypeScript**: Ensures type safety and robustness.
 
-## Deploy on Vercel
+## Contributing
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m 'Add feature'`.
+4. Push to the branch: `git push origin feature-name`.
+5. Open a pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+This project is licensed under the MIT License.
