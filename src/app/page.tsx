@@ -1,101 +1,125 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter();
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [expiration, setExpiration] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const calculateExpiration = (duration: string) => {
+    // this is a function that calculates the expiration date based on the duration selected
+    const now = new Date();
+    switch (duration) {
+      case "5-minutes":
+        now.setMinutes(now.getMinutes() + 5);
+        break;
+      case "10-minutes":
+        now.setMinutes(now.getMinutes() + 10);
+        break;
+      case "30-minutes":
+        now.setMinutes(now.getMinutes() + 30);
+        break;
+      case "1-hour":
+        now.setHours(now.getHours() + 1);
+        break;
+      case "5-hours":
+        now.setHours(now.getHours() + 5);
+        break;
+      default:
+        return null;
+    }
+    return now.toISOString();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const expirationDate = calculateExpiration(expiration);
+
+    if (!originalUrl) {
+      setError("Please provide a URL to shorten.");
+      setLoading(false);
+      return;
+    }
+
+    if (!expirationDate) {
+      setError("Please select a valid expiration duration.");
+      setLoading(false);
+      return;
+    }
+
+    const formData = {
+      originalUrl,
+      expiration: expirationDate,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.message || "Something went wrong. Please try again.");
+      } else {
+        setOriginalUrl("");
+        setExpiration("");
+        router.refresh();
+      }
+    } catch (error) {
+      setError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="py-4 pl-10 w-full px-8">
+      <h1 className="font-bold text-4xl">URL Shortener</h1>
+      <form onSubmit={handleSubmit} className="w-full space-y-4 py-4">
+        {error && <div className="text-red-500 text-sm">{error}</div>}
+        <div className="flex">
+          <input
+            type="text"
+            placeholder="Paste the URL to be shortened"
+            className="focus:outline-none flex-1 border border-gray-400 px-2 py-2 placeholder:text-lg"
+            value={originalUrl}
+            onChange={(e) => setOriginalUrl(e.target.value)}
+          />
+          <select
+            className="focus:outline-none text-gray-400 border border-gray-400 px-2 py-2 placeholder:text-lg"
+            name="interval"
+            id="interval"
+            onChange={(e) => setExpiration(e.target.value)}
+            value={expiration}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option value="">Set a duration time</option>
+            <option value="5-minutes">5 Minutes</option>
+            <option value="10-minutes">10 Minutes</option>
+            <option value="30-minutes">30 Minutes</option>
+            <option value="1-hour">1 Hour</option>
+            <option value="5-hours">5 Hours</option>
+          </select>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="submit"
+          className="bg-[#6a3693] text-white px-4 py-2"
+          disabled={loading}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {loading ? "Loading..." : "Shorten URL"}
+        </button>
+      </form>
     </div>
   );
 }
