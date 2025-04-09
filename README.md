@@ -39,7 +39,6 @@ DATABASE_URL="postgresql://short-url_owner:QqRB08cVArfm@ep-cool-snow-a2uf1mky.eu
 3. **Setup the Environment Variables**
    Create a `.env` file in the project root and add the `DATABASE_URL` variable:
    ```env
-   DATABASE_URL="postgresql://short-url_owner:QqRB08cVArfm@ep-cool-snow-a2uf1mky.eu-central-1.aws.neon.tech/short-url?sslmode=require"
    ```
 
 4. **Start the Development Server**
